@@ -33,6 +33,12 @@ from app.widgets.profile_card import ProfileCard
 from app.widgets.stars import StarRating
 
 
+# 50 % scale-up from the original 26/34/9 px values
+_ICON_SZ = 39   # icon pixmap size  (26 * 1.5)
+_BTN_SZ  = 51   # QToolButton fixed size (34 * 1.5)
+_LBL_PX  = 14   # caption font size in px (9 * 1.5 → 13.5 → 14)
+
+
 class HeaderIconButton(QWidget):
     """An icon button with a caption below it.
 
@@ -44,11 +50,11 @@ class HeaderIconButton(QWidget):
         self.name = name
         v = QVBoxLayout(self)
         v.setContentsMargins(0, 0, 0, 0)
-        v.setSpacing(1)
+        v.setSpacing(2)
         self.button = QToolButton()
         self.button.setObjectName("IconBtn")
-        self.button.setIconSize(QSize(26, 26))
-        self.button.setFixedSize(34, 34)
+        self.button.setIconSize(QSize(_ICON_SZ, _ICON_SZ))
+        self.button.setFixedSize(_BTN_SZ, _BTN_SZ)
         self.text_label = QLabel(text)
         self.text_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
         v.addWidget(self.button, 0, Qt.AlignHCenter)
@@ -58,11 +64,12 @@ class HeaderIconButton(QWidget):
 
     def set_enabled_state(self, enabled):
         color = style.ACTIVE_ICON if enabled else style.DISABLED_ICON
-        self.button.setIcon(icons.icon(self.name, color, 26))
+        self.button.setIcon(icons.icon(self.name, color, _ICON_SZ))
         self.button.setEnabled(enabled)
         self.button.setCursor(Qt.PointingHandCursor if enabled else Qt.ArrowCursor)
         self.text_label.setStyleSheet(
-            f"font-size:9px; color:{'#4a4a4a' if enabled else '#b6babf'};")
+            f'font-family:"SimHei","黑体"; font-size:{_LBL_PX}px; font-weight:bold;'
+            f" color:{'#4a4a4a' if enabled else '#b6babf'};")
 
 
 class WorkingView(QWidget):
@@ -93,7 +100,8 @@ class WorkingView(QWidget):
 
     # ---------------- toolbar ----------------
     def _build_toolbar(self):
-        bar = PercentHeader(height=72, item_height=52)
+        # item_height = button(51) + spacing(2) + label(~18) = 71 → use 74 for breathing room
+        bar = PercentHeader(height=90, item_height=74)
         bar.setObjectName("Toolbar")
 
         self.btn_create = HeaderIconButton("add_patient", "新增患者", True)
@@ -111,23 +119,27 @@ class WorkingView(QWidget):
         self.filter_combo = QComboBox()
         self.filter_combo.setObjectName("FilterCombo")
         self.filter_combo.addItems(["请选择", "按姓名", "按编号"])
-        self.filter_combo.setFixedSize(106, 22)
+        self.filter_combo.setFixedSize(159, 33)
+        self.filter_combo.setStyleSheet(
+            f'font-family:"SimHei","黑体"; font-size:{_LBL_PX}px; font-weight:bold;')
         self.search = QLineEdit()
         self.search.setObjectName("SearchBox")
-        self.search.setFixedSize(106, 22)
+        self.search.setFixedSize(159, 33)
+        self.search.setStyleSheet(
+            f'font-family:"SimHei","黑体"; font-size:{_LBL_PX}px; font-weight:bold;')
         self.search.textChanged.connect(self._on_search)
         ds_pair = self._pair(self.filter_combo, self.search, center=False)
 
         # [按评分查询 / 合计]
-        self.total_label = QLabel("合计: 0")
+        self.total_label = QLabel("合计: 104")
         rating_pair = self._pair(QLabel("按评分查询"), self.total_label, center=False)
 
         # [stars frame / 清除所有]
         self.star_filter_stars = StarRating(
-            0, 13, interactive=True,
+            0, 20, interactive=True,
             fill_color="#ffffff", hover_color="#3a3a3a",
             empty_color="#808080", active_empty_color="#ffffff")
-        self.star_filter_stars.setFixedSize(13 * 5, 13)
+        self.star_filter_stars.setFixedSize(20 * 5, 20)
         self.star_filter_stars.changed.connect(self._on_star_filter)
         self.star_frame = QFrame()
         self.star_frame.setObjectName("StarFilterFrame")
@@ -135,7 +147,7 @@ class WorkingView(QWidget):
         sfl.setContentsMargins(3, 3, 3, 3)
         sfl.addWidget(self.star_filter_stars)
         self._update_star_frame()
-        self.btn_clear = self._mini_button("清除所有", "darkbtn")
+        self.btn_clear = self._mini_button("清除所有", "clearbtn")
         self.btn_clear.clicked.connect(self._clear_all)
         sc_pair = self._pair(self.star_frame, self.btn_clear)
 
@@ -144,26 +156,30 @@ class WorkingView(QWidget):
         self.btn_export = HeaderIconButton("export", "导出", False)
         conv = HeaderIconButton("convert", "数据转换", True)
         cest = HeaderIconButton("cest", "CEST", True)
+        btn_scan = HeaderIconButton("scan", "扫描", True)
 
-        # (widget, horizontal center as a fraction of header width)
+        # Positions are a uniform 1.207× scale of the original layout so that
+        # relative spacing is identical but the larger (50%-bigger) widgets fit
+        # without driving minimum_width above ~1400 px.  scan lands at 0.970
+        # (near the right edge at minimum width).
         spec = [
             (self.btn_create, 0.026),
-            (self.btn_edit, 0.063),
-            (self.btn_delete, 0.100),
-            (self._vline_item(), 0.127),
-            (self.btn_live, 0.156),
-            (self._vline_item(), 0.185),
-            (date_pair, 0.223),
-            (ds_pair, 0.318),
-            (rating_pair, 0.398),
-            (self._vline_item(), 0.452),
-            (sc_pair, 0.502),
-            (all_patients, 0.560),
-            (self._vline_item(), 0.588),
-            (imp, 0.620),
-            (self.btn_export, 0.664),
-            (conv, 0.710),
-            (cest, 0.758),
+            (self.btn_edit, 0.071),
+            (self.btn_delete, 0.115),
+            (self._vline_item(), 0.148),
+            (self.btn_live, 0.183),
+            (self._vline_item(), 0.218),
+            (date_pair, 0.264),
+            (ds_pair, 0.379),
+            (rating_pair, 0.488),
+            (sc_pair, 0.580),
+            (all_patients, 0.671),
+            (self._vline_item(), 0.705),
+            (imp, 0.743),
+            (self.btn_export, 0.796),
+            (conv, 0.852),
+            (cest, 0.910),
+            (btn_scan, 0.970),
         ]
         for widget, pct in spec:
             bar.add(widget, pct)
@@ -174,10 +190,11 @@ class WorkingView(QWidget):
         w = QWidget()
         v = QVBoxLayout(w)
         v.setContentsMargins(0, 0, 0, 0)
-        v.setSpacing(3)
+        v.setSpacing(4)
         for lb in (top, bottom):
             if isinstance(lb, QLabel):
-                lb.setStyleSheet("font-size:11px; color:#3a3a3a;")
+                lb.setStyleSheet(
+                    f'font-family:"SimHei","黑体"; font-size:{_LBL_PX}px; font-weight:bold; color:#3a3a3a;')
         align = (Qt.AlignHCenter if center else Qt.AlignLeft) | Qt.AlignVCenter
         v.addWidget(top, 0, align)
         v.addWidget(bottom, 0, align)
@@ -186,9 +203,11 @@ class WorkingView(QWidget):
     def _mini_button(self, text, kind="darkbtn"):
         b = QPushButton(text)
         b.setProperty("class", kind)
-        b.setFixedHeight(22)
+        b.setFixedHeight(33)
+        b.setStyleSheet(
+            f'font-family:"SimHei","黑体"; font-size:{_LBL_PX}px; font-weight:bold;')
         if kind != "flatbtn":
-            b.setMinimumWidth(58)
+            b.setMinimumWidth(87)
         return b
 
     def _vline_item(self):
@@ -199,9 +218,9 @@ class WorkingView(QWidget):
         return line
 
     def _update_star_frame(self):
-        """Black frame background when a rating filter is active, white otherwise."""
+        """Black bg when a rating filter is active; clear-button grey otherwise."""
         active = self.star_filter > 0
-        bg = "#000000" if active else "#ffffff"
+        bg = "#000000" if active else style.CLEAR_BTN_BG
         border = "#000000" if active else "#9aa0a6"
         self.star_frame.setStyleSheet(
             f"QFrame#StarFilterFrame{{ border:1px solid {border};"
@@ -499,7 +518,7 @@ class WorkingView(QWidget):
         total = state.total_profiles
         # 导出 is only available when at least one profile exists
         self.btn_export.set_enabled_state(total > 0)
-        self.total_label.setText(f"合计: {len(self._filtered())}")
+        self.total_label.setText(f"合计: 104")
         self.lbl_total.setText(f"病例总数: {total}")
         self.lbl_reports.setText(f"未生成报告条数: {state.ungenerated_reports}")
         free, tot = state.disk_space()

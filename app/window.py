@@ -26,7 +26,7 @@ from app.settings_view import SettingsView
 from app.working_view import WorkingView
 
 BORDER = 6
-TITLE_H = 34
+TITLE_H = 40
 
 # win32 constants
 GWL_STYLE = -16
@@ -78,7 +78,7 @@ class TitleBar(QWidget):
         h.addWidget(self.tab, 0, Qt.AlignBottom)
 
         h.addStretch(1)
-        title = QLabel("RCVue软件科研版")
+        title = QLabel("临床决策支持系统")
         title.setObjectName("AppTitle")
         h.addWidget(title)
         h.addStretch(1)
@@ -130,7 +130,7 @@ class TitleBar(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("RCVue软件科研版")
+        self.setWindowTitle("临床决策支持系统")
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self._native_ready = False
 
@@ -153,8 +153,9 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.settings)
         self.stack.setCurrentWidget(self.working)
 
-        # smallest size at which every header element stays visible & non-overlapping
-        header_min = self.working.header.minimum_width()
+        # Items are allowed to just touch (gap=0) at minimum width — no visual
+        # overlap, but as compact as possible.
+        header_min = self.working.header.minimum_width(min_gap=0)
         min_w = max(1024, header_min)
         self.setMinimumSize(min_w, 600)
         self.resize(max(1200, min_w + 40), 740)

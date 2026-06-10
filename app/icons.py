@@ -150,15 +150,25 @@ def draw(name: str, color: str = ACTIVE, size: int = 28) -> QPixmap:
                 QPointF(s * 0.20, s * 0.40), QPointF(s * 0.34, s * 0.40), QPointF(s * 0.27, s * 0.26)]))
             p.drawPolygon(QPolygonF([
                 QPointF(s * 0.80, s * 0.60), QPointF(s * 0.66, s * 0.60), QPointF(s * 0.73, s * 0.74)]))
-        elif name in ("cest", "scan"):
+        elif name == "cest":
             _pen(p, color, 2)
             p.drawRoundedRect(QRectF(s * 0.20, s * 0.22, s * 0.60, s * 0.56), 4, 4)
             f = QFont("Arial", int(s * 0.22))
             f.setBold(True)
             p.setFont(f)
             p.setPen(QPen(c))
-            label = "C" if name == "cest" else "S"
-            p.drawText(QRectF(0, 0, s, s), Qt.AlignCenter, label)
+            p.drawText(QRectF(0, 0, s, s), Qt.AlignCenter, "C")
+        elif name == "scan":
+            # Flatbed scanner: outer body + glass platen lines + bright scan beam
+            _pen(p, color, 2)
+            p.drawRoundedRect(QRectF(s * 0.14, s * 0.24, s * 0.72, s * 0.52), 4, 4)
+            # two faint boundary lines (top and bottom of scan area)
+            _pen(p, color, 1.5)
+            p.drawLine(QPointF(s * 0.22, s * 0.37), QPointF(s * 0.78, s * 0.37))
+            p.drawLine(QPointF(s * 0.22, s * 0.63), QPointF(s * 0.78, s * 0.63))
+            # bright central scan beam
+            _pen(p, color, 2.5)
+            p.drawLine(QPointF(s * 0.22, s * 0.50), QPointF(s * 0.78, s * 0.50))
         elif name == "gear":
             _pen(p, color, 1.6)
             p.setBrush(Qt.NoBrush)

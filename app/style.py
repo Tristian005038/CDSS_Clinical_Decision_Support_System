@@ -5,7 +5,7 @@ import tempfile
 # palette sampled directly from the reference screenshots
 TITLE_BLUE = "#124678"
 TITLE_BLUE_DARK = "#0e3a66"
-TOOLBAR_BG = "#ffffff"
+TOOLBAR_BG = "#e0e0e0"
 WORK_AREA_BG = "#808080"
 CARD_HEADER = "#ae471e"
 CARD_HEADER_SEL = "#1f3a5f"
@@ -24,6 +24,8 @@ TURQUOISE = "#3fb6b6"
 ACTIVE_ICON = "#272727"
 DISABLED_ICON = "#bdbdbd"
 DARK_BTN = "#2c2c2c"
+# 清除所有 button and inactive star-filter frame: slightly darker than TOOLBAR_BG (#e0e0e0)
+CLEAR_BTN_BG = "#c4c4c4"
 
 _QSS_TEMPLATE = f"""
 * {{
@@ -38,7 +40,8 @@ _QSS_TEMPLATE = f"""
 }}
 #TitleBar QLabel#AppTitle {{
     color: #ffffff;
-    font-size: 13px;
+    font-family: "SimHei", "黑体";
+    font-size: 20px;
 }}
 QToolButton#TitleBtn {{
     background: transparent;
@@ -71,7 +74,7 @@ QToolButton#IconBtn {{
     border-radius: 6px;
 }}
 QToolButton#IconBtn:hover:enabled {{
-    background: #d0d2d4;
+    background: #c4c6c8;
 }}
 
 QLineEdit#SearchBox {{
@@ -129,6 +132,17 @@ QPushButton.darkbtn {{
 }}
 QPushButton.darkbtn:hover {{ background: #3c3c3c; }}
 QPushButton.darkbtn:disabled {{ background: #9a9a9a; }}
+
+/* 清除所有 button: light grey bg, dark text, sits on the grey toolbar */
+QPushButton.clearbtn {{
+    background: {CLEAR_BTN_BG};
+    color: #1a1a1a;
+    border: none;
+    border-radius: 2px;
+    padding: 3px 12px;
+}}
+QPushButton.clearbtn:hover {{ background: #b8b8b8; }}
+QPushButton.clearbtn:disabled {{ background: #d4d4d4; color: #888888; }}
 
 /* flat text control used by 查询 */
 QPushButton.flatbtn {{
