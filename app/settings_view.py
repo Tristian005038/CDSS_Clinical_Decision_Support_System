@@ -92,6 +92,7 @@ class SettingsView(QWidget):
         self.nav_buttons[0].setChecked(True)
         self.stack.setCurrentIndex(0)
         state.users_changed.connect(self._reload_users)
+        state.current_user_changed.connect(self._refresh_current_user)
 
     # ---------------- sidebar ----------------
     def _build_sidebar(self):
@@ -140,7 +141,9 @@ class SettingsView(QWidget):
         v.setContentsMargins(30, 24, 30, 24)
         v.setSpacing(8)
         v.addWidget(_h1("用户管理"))
-        v.addWidget(_sub("当前登录用户为 'Admin'"))
+        self.lbl_current_user = _sub("")
+        self._refresh_current_user()
+        v.addWidget(self.lbl_current_user)
         v.addSpacing(8)
         v.addWidget(_h2("修改密码"))
 
@@ -193,6 +196,10 @@ class SettingsView(QWidget):
         v.addStretch(1)
         self._reload_users()
         return page
+
+    def _refresh_current_user(self):
+        name = state.current_user or "Admin"
+        self.lbl_current_user.setText(f"当前登录用户为 '{name}'")
 
     def _reload_users(self):
         t = self.users_table

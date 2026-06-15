@@ -17,6 +17,7 @@ class AppState(QObject):
     doctors_changed = Signal()
     users_changed = Signal()
     settings_changed = Signal()
+    current_user_changed = Signal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -28,6 +29,9 @@ class AppState(QObject):
 
         # users for the settings user-management table (starts empty)
         self.users: list[dict] = []
+
+        # the account from the login screen (shown in 用户管理)
+        self.current_user: str = ""
 
         # doctor names that feed the form dropdowns (申请人员 / 操作人员 / 报告人员)
         self.doctors: list[dict] = []  # {"name": str, "type": str, "signature": str|None}
@@ -93,10 +97,31 @@ class AppState(QObject):
             self.selected_ids = set()
             self.selection_changed.emit()
 
-    # ----- users -----
+    # ----- users / login -----
     def user_names(self) -> list[str]:
         """用户名称 values that drive 操作人员 / 申请人员 / 报告人员 dropdowns."""
         return [u["username"] for u in self.users if u.get("username")]
+
+    def login(self, username: str, password: str = "") -> None:
+        """Record the logged-in account and persist it to user-management memory.
+
+        Any credentials are accepted. The username becomes the current user
+        shown in 用户管理 and, if new, is added to the user table.
+        """
+        username = (username or "").strip()
+        self.current_user = username
+        if username and not any(
+            u.get("username", "").lower() == username.lower() for u in self.users
+        ):
+            self.users.append({
+                "username": username,
+                "password": password,
+                "realname": "",
+                "dept": "",
+                "type": "管理员",
+            })
+            self.users_changed.emit()
+        self.current_user_changed.emit()
 
     # ----- doctors -----
     def doctor_names(self) -> list[str]:

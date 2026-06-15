@@ -153,6 +153,32 @@ QPushButton.flatbtn {{
 }}
 QPushButton.flatbtn:hover {{ color: #111111; }}
 
+/* ---- login window ---- */
+QToolButton#LangBtn {{
+    color: #ffffff;
+    background: transparent;
+    border: none;
+    padding: 2px 6px;
+    font-size: 13px;
+}}
+QToolButton#LangBtn::menu-indicator {{
+    image: url(__ARROW_W__);
+    subcontrol-position: right center;
+    width: 9px; height: 9px;
+}}
+QToolButton#LangBtn:hover {{ background: rgba(255,255,255,0.18); border-radius: 3px; }}
+#LoginBody {{ background: #ffffff; }}
+QPushButton.loginbtn {{
+    background: #ffffff;
+    color: {ACCENT_BLUE};
+    border: 1px solid {ACCENT_BLUE};
+    border-radius: 2px;
+    font-size: 14px;
+}}
+QPushButton.loginbtn:hover {{ background: #eef3fa; }}
+QPushButton.loginbtn:pressed {{ background: {ACCENT_BLUE}; color: #ffffff; }}
+#LoginBody QCheckBox {{ color: {ACCENT_BLUE}; spacing: 6px; }}
+
 /* ---- dialogs ---- */
 #Dialog {{ background: #f0f1f3; border: 1px solid #b8bcc1; }}
 #DialogHeader {{ background: {TITLE_BLUE}; }}
@@ -240,18 +266,18 @@ QTableWidget::item:selected {{ background: #cfe0f3; color: #2b2b2b; }}
 """
 
 
-def _write_down_arrow() -> str:
+def _write_down_arrow(color: str = "#3a3a3a", tag: str = "") -> str:
     """Render the dropdown triangle to a temp PNG and return its url-safe path."""
     from PySide6.QtCore import QPointF, Qt
     from PySide6.QtGui import QColor, QPainter, QPixmap, QPolygonF
 
-    path = os.path.join(tempfile.gettempdir(), "rcvue_down_arrow.png")
+    path = os.path.join(tempfile.gettempdir(), f"rcvue_down_arrow{tag}.png")
     pm = QPixmap(18, 18)
     pm.fill(Qt.transparent)
     p = QPainter(pm)
     p.setRenderHint(QPainter.Antialiasing, True)
     p.setPen(Qt.NoPen)
-    p.setBrush(QColor("#3a3a3a"))
+    p.setBrush(QColor(color))
     p.drawPolygon(QPolygonF([QPointF(4, 6), QPointF(14, 6), QPointF(9, 12)]))
     p.end()
     pm.save(path)
@@ -260,5 +286,9 @@ def _write_down_arrow() -> str:
 
 def build_qss() -> str:
     """Return the full stylesheet (call after the QApplication exists)."""
-    return _QSS_TEMPLATE.replace("__ARROW__", _write_down_arrow())
+    return (
+        _QSS_TEMPLATE
+        .replace("__ARROW_W__", _write_down_arrow("#ffffff", "_w"))
+        .replace("__ARROW__", _write_down_arrow())
+    )
 

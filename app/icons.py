@@ -244,6 +244,43 @@ def draw(name: str, color: str = ACTIVE, size: int = 28) -> QPixmap:
             p.drawRoundedRect(QRectF(s * 0.20, s * 0.42, s * 0.30, s * 0.20), 8, 8)
             p.drawRoundedRect(QRectF(s * 0.50, s * 0.38, s * 0.30, s * 0.20), 8, 8)
             p.drawLine(QPointF(s * 0.40, s * 0.52), QPointF(s * 0.60, s * 0.50))
+        elif name == "globe":
+            _pen(p, color, 2)
+            p.drawEllipse(QRectF(s * 0.16, s * 0.16, s * 0.68, s * 0.68))
+            # meridian (vertical ellipse) + equator
+            p.drawEllipse(QRectF(s * 0.38, s * 0.16, s * 0.24, s * 0.68))
+            p.drawLine(QPointF(s * 0.16, s * 0.50), QPointF(s * 0.84, s * 0.50))
+            # two latitude lines (shorter than the equator)
+            p.drawLine(QPointF(s * 0.27, s * 0.34), QPointF(s * 0.73, s * 0.34))
+            p.drawLine(QPointF(s * 0.27, s * 0.66), QPointF(s * 0.73, s * 0.66))
+        elif name == "lock":
+            _pen(p, color, 2)
+            # shackle (upper half arc)
+            p.drawArc(QRectF(s * 0.33, s * 0.20, s * 0.34, s * 0.42), 0, 180 * 16)
+            # body
+            p.drawRoundedRect(QRectF(s * 0.27, s * 0.46, s * 0.46, s * 0.34), 4, 4)
+            # keyhole
+            p.setBrush(c)
+            p.setPen(QPen(c, 1))
+            p.drawEllipse(QRectF(s * 0.455, s * 0.55, s * 0.09, s * 0.09))
+            _pen(p, color, 2)
+            p.drawLine(QPointF(s * 0.50, s * 0.61), QPointF(s * 0.50, s * 0.71))
+        elif name == "user_caret":
+            _pen(p, color, 2)
+            p.setBrush(c)
+            p.drawEllipse(QRectF(s * 0.22, s * 0.16, s * 0.26, s * 0.26))
+            path = QPainterPath()
+            path.moveTo(s * 0.12, s * 0.80)
+            path.cubicTo(s * 0.14, s * 0.50, s * 0.56, s * 0.50, s * 0.58, s * 0.80)
+            p.drawPath(path)
+            # dropdown caret to the right of the figure
+            p.setBrush(c)
+            p.setPen(Qt.NoPen)
+            p.drawPolygon(QPolygonF([
+                QPointF(s * 0.66, s * 0.44),
+                QPointF(s * 0.88, s * 0.44),
+                QPointF(s * 0.77, s * 0.58),
+            ]))
         elif name == "arrow_left":
             _pen(p, color, 2)
             p.drawLine(QPointF(s * 0.60, s * 0.28), QPointF(s * 0.38, s * 0.50))
