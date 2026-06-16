@@ -458,7 +458,7 @@ class SettingsView(QWidget):
         v.addLayout(trow)
         v.addWidget(_primary("添加阅片模板", 110))
         lst = QListWidget()
-        lst.addItems(["小肠检查模板", "出经查看模板", "胃+小肠检查模板"])
+        lst.addItems(["小肠检查模板", "胃检查模板", "胃+小肠检查模板"])
         lst.setFixedHeight(260)
         lst.setAlternatingRowColors(True)
         lst.setFocusPolicy(Qt.NoFocus)
@@ -480,8 +480,8 @@ class SettingsView(QWidget):
         v.addWidget(_h1("关于"))
 
         info = QLabel(
-            "软件名称：临床决策支持系统\n"
-            "软件发布版本号：Beta\n"
+            "软件名称：基于改进FPN的内镜息肉识别临床决策系统\n"
+            "软件发布版本号：V1.0.0\n"
             "制作人：陶鑫 田思远"
         )
         info.setStyleSheet("font-size:13px; color:#8a8f95;")

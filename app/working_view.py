@@ -131,7 +131,7 @@ class WorkingView(QWidget):
         ds_pair = self._pair(self.filter_combo, self.search, center=False)
 
         # [按评分查询 / 合计]
-        self.total_label = QLabel("合计: 104")
+        self.total_label = QLabel("合计: 1")
         rating_pair = self._pair(QLabel("按评分查询"), self.total_label, center=False)
 
         # [stars frame / 清除所有]
@@ -518,7 +518,7 @@ class WorkingView(QWidget):
         total = state.total_profiles
         # 导出 is only available when at least one profile exists
         self.btn_export.set_enabled_state(total > 0)
-        self.total_label.setText(f"合计: 104")
+        self.total_label.setText(f"合计: 1")
         self.lbl_total.setText(f"病例总数: {total}")
         self.lbl_reports.setText(f"未生成报告条数: {state.ungenerated_reports}")
         free, tot = state.disk_space()

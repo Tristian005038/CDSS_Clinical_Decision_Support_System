@@ -78,7 +78,7 @@ class TitleBar(QWidget):
         h.addWidget(self.tab, 0, Qt.AlignBottom)
 
         h.addStretch(1)
-        title = QLabel("临床决策支持系统")
+        title = QLabel("基于改进FPN的内镜息肉识别临床决策系统")
         title.setObjectName("AppTitle")
         h.addWidget(title)
         h.addStretch(1)
@@ -130,7 +130,7 @@ class TitleBar(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("临床决策支持系统")
+        self.setWindowTitle("基于改进FPN的内镜息肉识别临床决策系统")
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self._native_ready = False
 
